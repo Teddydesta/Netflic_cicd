@@ -13,12 +13,10 @@ ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
 
 RUN npm run build
 
-FROM node:lts-alpine3.19 as production
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY  --from=builder /app/dist .
+EXPOSE 80
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
 
-WORKDIR /app
-
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 8081
-
-CMD ["node", "dist/index.js"]
